@@ -56,22 +56,28 @@ def listar_projetos():
 
 @app.route('/api/projeto/<int:projeto_id>', methods=['GET'])
 def obter_projeto(projeto_id):
-    projeto = Projeto.query.get_or_404(projeto_id)
-    total_gasto = sum(compra.valor for compra in projeto.compras)
-    valor_restante = projeto.valor_bruto - total_gasto
-    return jsonify({
-        'id': projeto.id,
-        'nome': projeto.nome,
-        'valor_bruto': projeto.valor_bruto,
-        'total_gasto': total_gasto,
-        'valor_restante': valor_restante,
-        'compras': [{
-            'id': compra.id,
-            'valor': compra.valor,
-            'descricao': compra.descricao,
-            'data': compra.data.strftime('%Y-%m-%d')
-        } for compra in projeto.compras]
-    })
+    try:
+        projeto = Projeto.query.get_or_404(projeto_id)
+        total_gasto = sum(compra.valor for compra in projeto.compras)
+        valor_restante = projeto.valor_bruto - total_gasto
+        
+        return jsonify({
+            'id': projeto.id,
+            'nome': projeto.nome,
+            'valor_bruto': projeto.valor_bruto,
+            'data_criacao': projeto.data_criacao.strftime('%Y-%m-%d'),
+            'total_gasto': total_gasto,
+            'valor_restante': valor_restante,
+            'compras': [{
+                'id': compra.id,
+                'valor': compra.valor,
+                'descricao': compra.descricao,
+                'data': compra.data.strftime('%Y-%m-%d')
+            } for compra in projeto.compras]
+        })
+    except Exception as e:
+        logging.error(f"Erro ao obter detalhes do projeto {projeto_id}: {str(e)}")
+        return jsonify({'erro': 'Erro ao carregar detalhes do projeto'}), 500
 
 @app.route('/api/projeto', methods=['POST'])
 def criar_projeto():
@@ -119,18 +125,6 @@ def adicionar_compra():
     db.session.add(nova_compra)
     db.session.commit()
     return jsonify({'mensagem': 'Compra adicionada com sucesso'}), 201
-
-@app.route('/api/projeto/<int:projeto_id>')
-def api_projeto_detalhes(projeto_id):
-    # Aqui você deve buscar os detalhes do projeto do banco de dados
-    # Este é um exemplo, substitua pela lógica real de busca no banco de dados
-    projeto = {
-        'id': projeto_id,
-        'nome': f'Projeto {projeto_id}',
-        'valor_bruto': 10000.00,
-        'data_criacao': '2023-05-01'
-    }
-    return jsonify(projeto)
 
 if __name__ == '__main__':
     with app.app_context():

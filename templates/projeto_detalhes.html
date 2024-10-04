@@ -33,7 +33,9 @@
             try {
                 const response = await axios.get(`/api/projeto/${projetoId}`);
                 const projeto = response.data;
-                document.getElementById('nome-projeto').textContent = projeto.nome;
+                console.log('Projeto recebido da API:', projeto);
+
+                document.getElementById('nome-projeto').textContent = projeto.nome || 'Nome não disponível';
                 document.getElementById('valor-bruto').textContent = formatarMoeda(projeto.valor_bruto);
                 document.getElementById('data-criacao').textContent = formatarData(projeto.data_criacao);
             } catch (error) {
@@ -43,11 +45,26 @@
         }
 
         function formatarData(dataString) {
-            const data = new Date(dataString);
-            return data.toLocaleDateString('pt-BR');
+            if (!dataString) return 'Data não disponível';
+            
+            // Assumindo que a data está no formato 'YYYY-MM-DD'
+            const [ano, mes, dia] = dataString.split('-');
+            const data = new Date(ano, mes - 1, dia);
+            
+            if (isNaN(data.getTime())) {
+                console.error('Data inválida:', dataString);
+                return 'Data inválida';
+            }
+            
+            return data.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
         }
 
         function formatarMoeda(valor) {
+            if (valor == null || isNaN(valor)) return 'Valor não disponível';
             return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
         }
 
