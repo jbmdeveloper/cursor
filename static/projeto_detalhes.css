@@ -1,0 +1,66 @@
+body {
+    background-color: #ffffff;
+}
+
+.sidebar {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.sidebar h1, .sidebar h2, .sidebar a {
+    color: #333;
+}
+
+.content {
+    background-color: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+#projeto-info, #compras-lista, #nova-compra {
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+h3 {
+    color: #333;
+}
+
+button {
+    width: 80%;
+    padding: 10px;
+    margin-bottom: 20px;
+    margin-left: 35px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #333;
+}
+
+input[type="number"], input[type="text"], input[type="date"] {
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    padding: 5px;
+    margin-bottom: 10px;
+}
