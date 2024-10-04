@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Projeto - JBM</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>JBM</h1>
+            </div>
+            <div class="sidebar-content">
+                <button onclick="voltarParaLista()">Voltar para Lista</button>
+            </div>
+        </div>
+        <div class="main-content">
+            <h2>Detalhes do Projeto</h2>
+            <div id="detalhes-projeto">
+                <p><strong>Nome:</strong> <span id="nome-projeto"></span></p>
+                <p><strong>Valor Bruto:</strong> <span id="valor-bruto"></span></p>
+                <p><strong>Data de Criação:</strong> <span id="data-criacao"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        async function carregarDetalhes() {
+            const projetoId = window.location.pathname.split('/').pop();
+            try {
+                const response = await axios.get(`/api/projeto/${projetoId}`);
+                const projeto = response.data;
+                document.getElementById('nome-projeto').textContent = projeto.nome;
+                document.getElementById('valor-bruto').textContent = formatarMoeda(projeto.valor_bruto);
+                document.getElementById('data-criacao').textContent = formatarData(projeto.data_criacao);
+            } catch (error) {
+                console.error('Erro ao carregar detalhes do projeto:', error);
+                alert('Erro ao carregar detalhes do projeto');
+            }
+        }
+
+        function formatarData(dataString) {
+            const data = new Date(dataString);
+            return data.toLocaleDateString('pt-BR');
+        }
+
+        function formatarMoeda(valor) {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
+        }
+
+        function voltarParaLista() {
+            window.location.href = '/';
+        }
+
+        window.addEventListener('load', carregarDetalhes);
+    </script>
+</body>
+</html>

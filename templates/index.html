@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Recursos - Construtora</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <section id="cabecalho">
+        <p>JBM </p>
+    </section>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>Gerenciamento de Recursos</h1>
+            </div>
+            <div class="sidebar-content">
+                <button onclick="mostrarFormProjeto()">Novo Projeto</button>
+                <button onclick="carregarProjetos()">Carregar Projetos</button>
+            </div>
+        </div>
+        <div class="main-content">
+            <table id="listaProjetos">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Data de Criação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Os projetos serão inseridos aqui pelo JavaScript -->
+                </tbody>
+            </table>
+            <div id="paginacao">
+                <button onclick="mudarPagina(-1)">Anterior</button>
+                <span id="paginaAtual">Página 1</span>
+                <button onclick="mudarPagina(1)">Próxima</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="formProjeto" class="popup">
+        <h2>Criar Novo Projeto</h2>
+        <form id="formNovoProjeto">
+            <input type="text" id="nomeProjeto" placeholder="Nome do Projeto" required>
+            <input type="number" id="valorBruto" placeholder="Valor Bruto" step="0.01" required>
+            <div class="form-group date-group">
+                <label for="dataCriacao">Data de criação:</label>
+                <input type="date" id="dataCriacao" required>
+            </div>
+            <div class="button-group">
+                <button type="submit">Criar Projeto</button>
+                <button type="button" onclick="fecharFormProjeto()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="popupErro" class="popup-erro">
+        <div class="popup-content">
+            <p id="mensagemErro"></p>
+            <button onclick="fecharPopupErro()">Fechar</button>
+        </div>
+    </div>
+
+    <div id="notificacao" class="popup">
+        <p id="mensagemNotificacao"></p>
+        <button onclick="fecharNotificacao()">OK</button>
+    </div>
+
+    <script>
+        const dataCriacaoInput = document.getElementById('dataCriacao');
+        const dataMinima = '1900-01-01';
+        const dataMaxima = new Date().toISOString().split('T')[0];
+
+        dataCriacaoInput.min = dataMinima;
+        dataCriacaoInput.max = dataMaxima;
+
+        function validarData(data) {
+            const dataEscolhida = new Date(data);
+            const minDate = new Date(dataMinima);
+            const maxDate = new Date(dataMaxima);
+            return dataEscolhida >= minDate && dataEscolhida <= maxDate;
+        }
+
+        dataCriacaoInput.addEventListener('input', function() {
+            if (!validarData(this.value)) {
+                this.setCustomValidity('Data inválida');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+
+        function mostrarPopupErro(mensagem) {
+            document.getElementById('mensagemErro').textContent = mensagem;
+            document.getElementById('popupErro').style.display = 'flex';
+        }
+
+        function fecharPopupErro() {
+            document.getElementById('popupErro').style.display = 'none';
+        }
+
+        let paginaAtual = 1;
+        const projetosPorPagina = 16;
+        let todosProjetos = [];
+
+        function mostrarFormProjeto() {
+            document.getElementById('formProjeto').style.display = 'block';
+        }
+
+        function fecharFormProjeto() {
+            document.getElementById('formProjeto').style.display = 'none';
+        }
+
+        function mostrarNotificacao(mensagem) {
+            document.getElementById('mensagemNotificacao').textContent = mensagem;
+            document.getElementById('notificacao').style.display = 'block';
+        }
+
+        function fecharNotificacao() {
+            document.getElementById('notificacao').style.display = 'none';
+        }
+
+        async function carregarProjetos() {
+            try {
+                const response = await axios.get('/api/projetos');
+                console.log('Resposta da API:', response.data);
+
+                todosProjetos = response.data;
+                exibirProjetos();
+            } catch (error) {
+                console.error('Erro ao carregar projetos:', error);
+                mostrarNotificacao('Erro ao carregar projetos');
+            }
+        }
+
+        function exibirProjetos() {
+            const inicio = (paginaAtual - 1) * projetosPorPagina;
+            const fim = inicio + projetosPorPagina;
+            const projetosPagina = todosProjetos.slice(inicio, fim);
+
+            let html = '';
+            if (projetosPagina.length === 0) {
+                html = '<tr><td colspan="3">Nenhum projeto encontrado.</td></tr>';
+            } else {
+                projetosPagina.forEach(projeto => {
+                    console.log('Projeto:', projeto); // Adicione este log
+                    html += `
+                        <tr class="projeto-item" onclick="abrirDetalhes(${projeto.id})">
+                            <td>${projeto.id || 'N/A'}</td>
+                            <td>${projeto.nome || 'Sem nome'}</td>
+                            <td>${projeto.data_criacao || 'Data não disponível'}</td>
+                        </tr>`;
+                });
+            }
+            document.querySelector('#listaProjetos tbody').innerHTML = html;
+            atualizarPaginacao();
+        }
+
+        function atualizarPaginacao() {
+            const totalPaginas = Math.ceil(todosProjetos.length / projetosPorPagina);
+            document.getElementById('paginaAtual').textContent = `Página ${paginaAtual} de ${totalPaginas}`;
+            
+            document.querySelector('#paginacao button:first-child').disabled = paginaAtual === 1;
+            document.querySelector('#paginacao button:last-child').disabled = paginaAtual === totalPaginas;
+        }
+
+        function mudarPagina(direcao) {
+            paginaAtual += direcao;
+            exibirProjetos();
+        }
+
+        function abrirDetalhes(projetoId) {
+            window.location.href = `/projeto/${projetoId}`;
+        }
+
+        function formatarData(data) {
+            const dia = String(data.getDate()).padStart(2, '0');
+            const mes = String(data.getMonth() + 1).padStart(2, '0');
+            const ano = data.getFullYear();
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        document.getElementById('formNovoProjeto').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nome = document.getElementById('nomeProjeto').value;
+            const valor_bruto = document.getElementById('valorBruto').value;
+            const data_criacao = dataCriacaoInput.value;
+
+            if (!validarData(data_criacao)) {
+                dataCriacaoInput.setCustomValidity('Data inválida');
+                dataCriacaoInput.reportValidity();
+                return;
+            }
+
+            console.log('Dados a serem enviados:', { nome, valor_bruto, data_criacao });
+            
+            try {
+                const response = await axios.post('/api/projeto', { nome, valor_bruto, data_criacao });
+                console.log('Resposta do servidor:', response.data);
+                mostrarNotificacao(`Projeto criado com sucesso! ID: ${response.data.id}`);
+                document.getElementById('formProjeto').style.display = 'none';
+                carregarProjetos();
+            } catch (error) {
+                console.error('Erro ao criar projeto:', error);
+                mostrarNotificacao('Erro ao criar projeto: ' + (error.response ? error.response.data.erro : error.message));
+            }
+        });
+
+        // Carrega os projetos quando a página é carregada
+        // carregarProjetos();
+
+        // Adicione este novo trecho de código
+        document.querySelector('.custom-select').addEventListener('click', function() {
+            document.getElementById('dataCriacao').click();
+        });
+
+        document.querySelector('.calendar-icon').addEventListener('click', function() {
+            document.getElementById('dataCriacao').click();
+        });
+
+        // Ajusta o tamanho do input de data após o carregamento da página
+        window.addEventListener('load', function() {
+            const label = document.querySelector('.date-group label');
+            const input = document.getElementById('dataCriacao');
+            input.style.width = label.offsetWidth + 'px';
+        });
+    </script>
+</body>
+</html>

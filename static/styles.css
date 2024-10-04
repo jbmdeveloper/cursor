@@ -1,0 +1,344 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body { 
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom, #3800ef, #4b84fe);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+#cabecalho {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 10px 0;
+}
+
+#cabecalho p {
+    margin-left: 40px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.container {
+    display: flex;
+    height: calc(100vh - 60px); /* Ajuste o valor 60px de acordo com a altura do seu cabeçalho */
+}
+
+.sidebar {
+    width: 25%;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: rgba(0, 0, 0, 0.2);   
+}
+
+.main-content {
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+    position: relative; /* Necessário para posicionamento absoluto do filho */
+    overflow: hidden;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+button {
+    width: 80%;
+    padding: 10px;
+    margin-bottom: 20px;
+    margin-left: 35px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.sidebar-content button {
+    padding: 20px;
+    font-size: 18px;
+    
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.popup { 
+    display: none; 
+    position: fixed; 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%); 
+    background: white;
+    color: #333;
+    padding: 20px; 
+    border-radius: 5px; 
+    box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+}
+
+.projeto-item { 
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px; 
+    margin: 5px 0; 
+    border-radius: 5px;
+    cursor: pointer; 
+    transition: background-color 0.3s;
+}
+
+.projeto-item:hover { 
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.button-group { 
+    display: flex; 
+    gap: 10px; 
+}
+
+input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.popup .button-group {
+    justify-content: flex-end;
+    margin-top: 15px;
+}
+
+.popup button {
+    width: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+th:first-child, td:first-child {
+    width: 10%; /* ID */
+}
+
+th:nth-child(2), td:nth-child(2) {
+    width: 50%; /* Nome */
+}
+
+th:last-child, td:last-child {
+    width: 40%; /* Data de Criação */
+}
+
+th {
+    background-color: rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.projeto-item {
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.projeto-item:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+#paginacao {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0;
+}
+
+#paginacao button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 0 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#paginacao button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+#paginaAtual {
+    font-weight: bold;
+}
+.data-input-container {
+    position: relative;
+}
+#dataCriacaoTexto {
+    width: 100%;
+    cursor: pointer;
+}
+.data-input-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+}
+.data-input-container input[type="text"] {
+    width: 70%;
+    box-sizing: border-box;
+}
+.calendar-wrapper {
+    width: 28%;
+    position: relative;
+}
+.calendar-wrapper input[type="date"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+}
+.custom-select {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    cursor: pointer;
+}
+.select-placeholder {
+    font-size: 14px;
+    color: #666;
+}
+.calendar-icon {
+    font-size: 12px;
+    color: #666;
+}
+/* Remover estilos padrão do navegador */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+.date-group {
+    display: flex;
+    align-items: center;
+}
+.date-group label {
+    margin-right: 10px;
+    white-space: nowrap;
+}
+.date-group input[type="date"] {
+    width: auto;
+    flex-grow: 0;
+}
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.popup-erro {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1001; /* Maior que o z-index do .popup */
+}
+
+.popup-erro .popup-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.popup-erro button {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.popup-erro button:hover {
+    background-color: #0056b3;
+}
+
+.projeto-info {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.info-item {
+    flex: 1;
+    text-align: center;
+}
+
+.info-label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.info-value {
+    font-size: 1.2em;
+}
+
+.projeto-titulo {
+    font-size: 2em;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #ddd;
+}
