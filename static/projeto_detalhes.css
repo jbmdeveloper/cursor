@@ -7,7 +7,7 @@ body {
 }
 
 .sidebar h1, .sidebar h2, .sidebar a {
-    color: #333;
+    color: #fdefef;
 }
 
 .content {
@@ -63,4 +63,165 @@ input[type="number"], input[type="text"], input[type="date"] {
     border: 1px solid rgba(0, 0, 0, 0.2);
     padding: 5px;
     margin-bottom: 10px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.projeto-titulo {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #fdefef;
+}
+
+.valores-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.valor-box {
+    flex: 1;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 0 5px;
+    text-align: center;
+}
+
+.valor-box h3 {
+    margin-top: 0;
+    font-size: 1em;
+    color: #333;
+}
+
+.valor-box p {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+/* Cores específicas para cada valor */
+#valor-bruto {
+    color: #28a745; /* Verde */
+}
+
+#valor-gasto {
+    color: #dc3545; /* Vermelho */
+}
+
+#valor-restante {
+    color: #1337e8; /* Verde */
+}
+
+/* Adicione aqui outros estilos específicos para a página de detalhes do projeto */
+
+/* Estilos para o modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Estilos para o formulário */
+#form-compra {
+    display: flex;
+    flex-direction: column;
+}
+
+#form-compra label {
+    margin-top: 10px;
+}
+
+#form-compra input,
+#form-compra textarea {
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+/* Estilos para a tabela */
+#tabela-compras {
+    margin-top: 20px;
+    overflow-x: auto; /* Para permitir rolagem horizontal em telas pequenas */
+}
+
+#tabela-compras table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* Para controlar melhor o tamanho das colunas */
+}
+
+#tabela-compras th,
+#tabela-compras td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#tabela-compras th {
+    background-color: #f2f2f2;
+}
+
+/* Ajustando o tamanho das colunas */
+#tabela-compras th:nth-child(1),
+#tabela-compras td:nth-child(1) {
+    width: 25%; /* Nome */
+}
+
+#tabela-compras th:nth-child(2),
+#tabela-compras td:nth-child(2) {
+    width: 40%; /* Descrição */
+}
+
+#tabela-compras th.coluna-data,
+#tabela-compras td:nth-child(3) {
+    width: 15%; /* Data */
+}
+
+#tabela-compras th.coluna-valor,
+#tabela-compras td:nth-child(4) {
+    width: 20%; /* Valor */
+    text-align: right; /* Alinhando o valor à direita */
+}
+
+/* Adicionando hover para melhor visualização de células com texto cortado */
+#tabela-compras td:hover {
+    white-space: normal;
+    word-break: break-word;
 }

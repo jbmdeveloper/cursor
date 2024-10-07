@@ -81,22 +81,49 @@ function mostrarNotificacao(mensagem) {
     }, 3000);
 }
 
-document.getElementById('formNovoProjeto').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const nome = document.getElementById('nomeProjeto').value;
-    const valor_bruto = document.getElementById('valorBruto').value;
-    const data_criacao = document.getElementById('dataCriacao').value;
-
+async function criarProjeto(dadosProjeto) {
     try {
-        const response = await axios.post('/api/projeto', { nome, valor_bruto, data_criacao });
-        mostrarNotificacao(`Projeto criado com sucesso! ID: ${response.data.id}`);
-        fecharFormProjeto();
-        await carregarProjetos();
+        const response = await axios.post('/api/projeto', dadosProjeto, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        console.log('Resposta do servidor:', response.data);
+        return response.data;
     } catch (error) {
         console.error('Erro ao criar projeto:', error);
-        mostrarNotificacao('Erro ao criar projeto: ' + (error.response ? error.response.data.erro : error.message));
+        if (error.response) {
+            // O servidor respondeu com um status de erro
+            console.error('Resposta de erro do servidor:', error.response.data);
+            throw new Error(error.response.data.erro || 'Erro desconhecido do servidor');
+        } else if (error.request) {
+            // A requisição foi feita mas não houve resposta
+            console.error('Nenhuma resposta recebida:', error.request);
+            throw new Error('Não foi possível conectar ao servidor');
+        } else {
+            // Algo aconteceu na configuração da requisição que causou o erro
+            console.error('Erro na configuração da requisição:', error.message);
+            throw error;
+        }
+    }
+}
+
+// Uso da função
+document.getElementById('formCriarProjeto').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const nome = document.getElementById('nomeProjeto').value;
+    const valorBruto = document.getElementById('valorBruto').value;
+    const dataCriacao = document.getElementById('dataCriacao').value;
+
+    try {
+        const resultado = await criarProjeto({ nome, valor_bruto: valorBruto, data_criacao: dataCriacao });
+        console.log('Projeto criado:', resultado);
+        // Atualize a UI ou redirecione conforme necessário
+    } catch (erro) {
+        console.error('Falha ao criar projeto:', erro.message);
+        // Mostre uma mensagem de erro para o usuário
     }
 });
 
 // Inicialização
-// window.addEventListener('load', carregarProjetos);
+window.addEventListener('load', carregarProjetos);

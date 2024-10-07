@@ -3,12 +3,14 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, date
 import logging
 import os
+from flask_cors import CORS  # Importe o CORS
 
 # Configuração de logging
 logging.basicConfig(level=logging.DEBUG)
 
 # Criação da aplicação Flask
 app = Flask(__name__)
+CORS(app)  # Habilite o CORS para todas as rotas
 
 # Configuração do banco de dados
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -27,12 +29,32 @@ class Projeto(db.Model):
     data_criacao = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     compras = db.relationship('Compra', backref='projeto', lazy=True)
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'nome': self.nome,
+            'valor_bruto': self.valor_bruto,
+            'data_criacao': self.data_criacao.strftime('%Y-%m-%d'),
+            'compras': [compra.to_dict() for compra in self.compras]
+        }
+
 class Compra(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(100), nullable=False)
     valor = db.Column(db.Float, nullable=False)
     descricao = db.Column(db.String(200), nullable=False)
     data = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     projeto_id = db.Column(db.Integer, db.ForeignKey('projeto.id'), nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'nome': self.nome,
+            'valor': self.valor,
+            'descricao': self.descricao,
+            'data': self.data.strftime('%Y-%m-%d'),
+            'projeto_id': self.projeto_id
+        }
 
 # Rotas da aplicação
 @app.route('/')
@@ -83,7 +105,16 @@ def obter_projeto(projeto_id):
 def criar_projeto():
     try:
         dados = request.json
-        logging.info(f"Dados recebidos: {dados}")
+        logging.info(f"Dados recebidos para criar projeto: {dados}")
+        
+        if not dados:
+            return jsonify({'erro': 'Nenhum dado recebido'}), 400
+        
+        if 'nome' not in dados or not dados['nome']:
+            return jsonify({'erro': 'Nome do projeto não fornecido'}), 400
+        
+        if 'valor_bruto' not in dados or not dados['valor_bruto']:
+            return jsonify({'erro': 'Valor bruto não fornecido'}), 400
         
         if 'data_criacao' not in dados or not dados['data_criacao']:
             return jsonify({'erro': 'Data de criação não fornecida'}), 400
@@ -113,18 +144,41 @@ def criar_projeto():
         db.session.rollback()
         return jsonify({'erro': str(e)}), 500
 
-@app.route('/api/compra', methods=['POST'])
-def adicionar_compra():
-    dados = request.json
-    nova_compra = Compra(
-        valor=dados['valor'],
-        descricao=dados['descricao'],
-        data=datetime.strptime(dados['data'], '%Y-%m-%d'),
-        projeto_id=dados['projeto_id']
-    )
-    db.session.add(nova_compra)
-    db.session.commit()
-    return jsonify({'mensagem': 'Compra adicionada com sucesso'}), 201
+@app.route('/api/projeto/<int:projeto_id>/compras', methods=['GET'])
+def get_compras(projeto_id):
+    projeto = Projeto.query.get_or_404(projeto_id)
+    return jsonify([compra.to_dict() for compra in projeto.compras])
+
+@app.route('/api/projeto/<int:projeto_id>/compras', methods=['POST'])
+def add_compra(projeto_id):
+    print(f"Recebida requisição para adicionar compra ao projeto {projeto_id}")
+    try:
+        projeto = Projeto.query.get_or_404(projeto_id)
+        data = request.json
+        print(f"Dados recebidos: {data}")
+        
+        if not all(key in data and data[key] for key in ['nome', 'valor', 'descricao', 'data']):
+            missing_or_empty = [key for key in ['nome', 'valor', 'descricao', 'data'] if key not in data or not data[key]]
+            error_msg = f'Dados incompletos ou vazios. Problemas com: {", ".join(missing_or_empty)}'
+            print(error_msg)
+            return jsonify({'erro': error_msg}), 400
+        
+        nova_compra = Compra(
+            nome=data['nome'],
+            valor=float(data['valor']),
+            descricao=data['descricao'],
+            data=datetime.strptime(data['data'], '%Y-%m-%d'),
+            projeto_id=projeto_id
+        )
+        print(f"Nova compra criada: {nova_compra}")
+        db.session.add(nova_compra)
+        db.session.commit()
+        print("Compra adicionada com sucesso ao banco de dados")
+        return jsonify(nova_compra.to_dict()), 201
+    except Exception as e:
+        print(f"Erro ao adicionar compra: {str(e)}")
+        db.session.rollback()
+        return jsonify({'erro': str(e)}), 500
 
 if __name__ == '__main__':
     with app.app_context():
