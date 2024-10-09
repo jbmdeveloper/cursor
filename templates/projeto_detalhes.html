@@ -65,17 +65,25 @@
             <span class="close" onclick="fecharModalCompra()">&times;</span>
             <h2>Adicionar Compra</h2>
             <form id="form-compra">
-                <label for="nome-compra">Nome:</label>
-                <input type="text" id="nome-compra" required>
+                <div class="form-group">
+                    <label for="nome-compra">Nome da Compra:</label>
+                    <input type="text" id="nome-compra" name="nome-compra" required placeholder="Ex: Material de construção">
+                </div>
 
-                <label for="valor-compra">Valor:</label>
-                <input type="number" id="valor-compra" step="0.01" required>
+                <div class="form-group">
+                    <label for="valor-compra">Valor (R$):</label>
+                    <input type="number" id="valor-compra" name="valor-compra" step="0.01" required placeholder="Ex: 100.50">
+                </div>
 
-                <label for="descricao-compra">Descrição:</label>
-                <textarea id="descricao-compra" required></textarea>
+                <div class="form-group">
+                    <label for="descricao-compra">Descrição:</label>
+                    <textarea id="descricao-compra" name="descricao-compra" required placeholder="Descreva os detalhes da compra"></textarea>
+                </div>
 
-                <label for="data-compra">Data:</label>
-                <input type="date" id="data-compra" required>
+                <div class="form-group">
+                    <label for="data-compra">Data da Compra:</label>
+                    <input type="date" id="data-compra" name="data-compra" required>
+                </div>
 
                 <button type="submit">Salvar Compra</button>
             </form>

@@ -139,8 +139,8 @@ input[type="number"], input[type="text"], input[type="date"] {
     border: 1px solid #888;
     width: 80%;
     max-width: 500px;
+    color: #0a0a0a;
 }
-
 .close {
     color: #aaa;
     float: right;
